@@ -283,15 +283,23 @@ html, body {
 .tp-actions { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
 .tp-next { display: block; margin-top: 6px; color: #6d7c5e; }
 
-/* info de compra */
+/* info de compra: flotante sobre la tienda, no altera el layout */
+#shop-area { position: relative; z-index: 5; }
 #shop-info {
   display: none;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: calc(100% + 6px);
   background: rgba(253, 246, 227, 0.96);
-  border-top: 2px solid #d9c49a;
+  border: 2px solid #d9c49a;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(70, 100, 50, 0.25);
   padding: 6px 12px;
   font-size: 0.85rem;
   line-height: 1.5;
-  z-index: 5;
+  z-index: 7;
+  pointer-events: none;
 }
 #shop-info.visible { display: block; }
 #shop-info .pill {
