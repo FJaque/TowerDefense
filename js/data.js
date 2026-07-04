@@ -93,6 +93,14 @@
 
   TD.SELL_RATIO = 0.7;
 
+  /* ---------- Dificultades ---------- */
+  // hp multiplica la vida de los zombis; money el dinero inicial; lives las vidas
+  TD.DIFFICULTIES = {
+    facil:   { name: 'Fácil',   icon: '🌱', hp: 0.75, money: 1.15, lives: 14 },
+    normal:  { name: 'Normal',  icon: '🌼', hp: 1.0,  money: 1.0,  lives: 10 },
+    dificil: { name: 'Difícil', icon: '🔥', hp: 1.35, money: 0.9,  lives: 7 },
+  };
+
   /* ---------- Enemigos (zombis) ---------- */
   // speed en px/s (a escala de celda 64), dmg = vidas que quita al llegar
   TD.ENEMIES = {

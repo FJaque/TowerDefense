@@ -10,29 +10,37 @@
      * @param levelIndex índice del nivel (0..n)
      * @param ui callbacks: sync(game), onEnd(game, won)
      */
-    constructor(canvas, levelIndex, ui) {
+    constructor(canvas, levelIndex, ui, diffKey) {
       this.canvas = canvas;
       this.ctx = canvas.getContext('2d');
       this.levelIndex = levelIndex;
       this.level = TD.LEVELS[levelIndex];
       this.ui = ui;
+      this.diffKey = diffKey && TD.DIFFICULTIES[diffKey] ? diffKey : 'normal';
+      this.diff = TD.DIFFICULTIES[this.diffKey];
 
-      this.cols = TD.COLS;
-      this.rows = TD.ROWS;
+      // en pantallas verticales se gira la cuadrícula (8x14 en vez de 14x8)
+      this.portrait = window.innerHeight > window.innerWidth;
+      this.cols = this.portrait ? TD.ROWS : TD.COLS;
+      this.rows = this.portrait ? TD.COLS : TD.ROWS;
       this.w = this.cols * CELL;
       this.h = this.rows * CELL;
 
-      // caminos en px y celdas de camino
-      this.paths = this.level.paths.map((wps) => this.expandPath(wps));
+      // caminos en px y celdas de camino (transpuestos si es vertical)
+      this.levelPaths = this.level.paths.map((wps) =>
+        wps.map(([c, r]) => (this.portrait ? [r, c] : [c, r]))
+      );
+      this.paths = this.levelPaths.map((wps) => this.expandPath(wps));
       this.pathCells = new Set();
       for (const p of this.paths) for (const c of p.cells) this.pathCells.add(c);
-      const lastWp = this.level.paths[0][this.level.paths[0].length - 1];
+      const lastWp = this.levelPaths[0][this.levelPaths[0].length - 1];
       this.houseCell = { col: lastWp[0], row: lastWp[1] };
 
-      // estado
-      this.money = this.level.money;
-      this.lives = this.level.lives;
-      this.maxLives = this.level.lives;
+      // estado (ajustado por dificultad)
+      this.hpMult = this.level.hpMult * this.diff.hp;
+      this.money = Math.round(this.level.money * this.diff.money);
+      this.lives = this.diff.lives;
+      this.maxLives = this.lives;
       this.enemies = [];
       this.towers = [];
       this.projectiles = [];
@@ -128,7 +136,7 @@
             sp.spawned++;
             sp.timer = sp.gap;
             const path = this.paths[Math.min(sp.p, this.paths.length - 1)];
-            this.enemies.push(new TD.Enemy(sp.t, this.level.hpMult, path.pts));
+            this.enemies.push(new TD.Enemy(sp.t, this.hpMult, path.pts));
           }
         }
         // ¿oleada terminada?
@@ -390,7 +398,7 @@
       }
 
       // entradas de zombis (portones oscuros) al inicio de cada camino
-      for (const wps of this.level.paths) {
+      for (const wps of this.levelPaths) {
         const [c0, r0] = wps[0];
         const x = c0 * CELL + CELL / 2, y = r0 * CELL + CELL / 2;
         ctx.fillStyle = '#6b5d52';

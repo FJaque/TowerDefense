@@ -11,9 +11,9 @@
   function loadSave() {
     try {
       const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-      if (s && typeof s === 'object') return { unlocked: 1, stars: {}, muted: false, ...s };
+      if (s && typeof s === 'object') return { unlocked: 1, stars: {}, muted: false, difficulty: 'normal', ...s };
     } catch (e) { /* guardado corrupto: se reinicia */ }
-    return { unlocked: 1, stars: {}, muted: false };
+    return { unlocked: 1, stars: {}, muted: false, difficulty: 'normal' };
   }
   function persist() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* sin storage */ }
@@ -120,6 +120,29 @@
     show('#screen-menu');
   });
 
+  /* ---------- selector de dificultad ---------- */
+  const DIFF_HINTS = {
+    facil: 'Zombis más débiles, más vidas y más dinero inicial.',
+    normal: 'La experiencia equilibrada de siempre.',
+    dificil: 'Zombis más duros, menos vidas y menos dinero. ¡Para valientes!',
+  };
+  function refreshDifficulty() {
+    if (!TD.DIFFICULTIES[save.difficulty]) save.difficulty = 'normal';
+    document.querySelectorAll('.diff-btn').forEach((b) => {
+      b.classList.toggle('selected', b.dataset.diff === save.difficulty);
+    });
+    $('#diff-hint').textContent = DIFF_HINTS[save.difficulty];
+  }
+  document.querySelectorAll('.diff-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      TD.audio.click();
+      save.difficulty = b.dataset.diff;
+      persist();
+      refreshDifficulty();
+    });
+  });
+  refreshDifficulty();
+
   /* ---------- juego ---------- */
   const canvas = $('#game-canvas');
   let lastHud = {};
@@ -127,7 +150,7 @@
   function startLevel(index) {
     if (game) game.destroy();
     lastHud = {};
-    game = new TD.Game(canvas, index, { sync: syncHud, onEnd });
+    game = new TD.Game(canvas, index, { sync: syncHud, onEnd }, save.difficulty);
     TD._game = game; // referencia para depuración
 
     // ajustar resolución del canvas (nítido en pantallas retina)
@@ -135,9 +158,11 @@
     canvas.width = game.w * dpr;
     canvas.height = game.h * dpr;
     canvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    // la cuadrícula se gira en vertical: ajustar proporción del lienzo
+    canvas.style.aspectRatio = `${game.cols} / ${game.rows}`;
 
     buildShop();
-    $('#hud-level-name').textContent = `${index + 1}. ${game.level.name}`;
+    $('#hud-level-name').textContent = `${index + 1}. ${game.level.name} ${game.diff.icon}`;
     $('#overlay-end').classList.remove('visible');
     $('#overlay-pause').classList.remove('visible');
     $('#tower-panel').classList.remove('visible');

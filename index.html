@@ -33,6 +33,15 @@
       <h2>Elige tu nivel</h2>
       <button class="btn-mute btn small icon" aria-label="Silenciar">🔊</button>
     </header>
+    <div id="difficulty-bar">
+      <span class="diff-label">Dificultad:</span>
+      <div id="difficulty-picker" role="group" aria-label="Dificultad">
+        <button class="diff-btn" data-diff="facil">🌱 Fácil</button>
+        <button class="diff-btn" data-diff="normal">🌼 Normal</button>
+        <button class="diff-btn" data-diff="dificil">🔥 Difícil</button>
+      </div>
+      <span id="diff-hint" class="diff-hint"></span>
+    </div>
     <div id="level-map">
       <svg id="level-path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
       <div id="level-nodes"></div>
