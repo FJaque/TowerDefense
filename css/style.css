@@ -302,6 +302,21 @@ html, body {
   pointer-events: none;
 }
 #shop-info.visible { display: block; }
+#shop-info-close {
+  float: right;
+  pointer-events: auto;
+  background: #f3ead4;
+  border: 1.5px solid #d9c49a;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  margin: -1px -4px 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #8a8a74;
+  cursor: pointer;
+  line-height: 1;
+}
 #shop-info .pill {
   display: inline-block;
   background: #eef3dd;

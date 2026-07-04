@@ -208,18 +208,27 @@
     }
   }
 
+  let shopInfoTimer = null;
   function showShopInfo(key) {
     const def = TD.TOWERS[key];
     const l0 = def.levels[0];
     const rangeTxt = l0.range > 0 ? `${l0.range} celdas` : '—';
     $('#shop-info').innerHTML = `
+      <button id="shop-info-close" aria-label="Cerrar">✕</button>
       <b>${def.icon} ${def.name}</b> · ${def.desc}<br>
       <span class="pill">📏 Alcance: ${rangeTxt}</span>
       <span class="pill">⚡ ${def.statLine(l0)}</span>
       <span class="pill hint">${game.isCoarse ? 'Toca una celda para previsualizar el rango y vuelve a tocar para plantar' : 'Pasa el ratón para ver el rango y haz clic para plantar'}</span>`;
     $('#shop-info').classList.add('visible');
+    $('#shop-info-close').addEventListener('click', () => { TD.audio.click(); hideShopInfo(); });
+    // se oculta solo al poco tiempo o al tocar el tablero, para no tapar la parte inferior
+    clearTimeout(shopInfoTimer);
+    shopInfoTimer = setTimeout(hideShopInfo, 6000);
   }
-  function hideShopInfo() { $('#shop-info').classList.remove('visible'); }
+  function hideShopInfo() {
+    clearTimeout(shopInfoTimer);
+    $('#shop-info').classList.remove('visible');
+  }
 
   function refreshShop() {
     document.querySelectorAll('.shop-card').forEach((card) => {
@@ -361,12 +370,14 @@
   }
   canvas.addEventListener('pointermove', (ev) => {
     if (!game) return;
+    if (game.placing) hideShopInfo(); // ya está apuntando: despejar la vista
     const { x, y } = canvasCoords(ev);
     game.onPointerMove(x, y);
   });
   canvas.addEventListener('pointerdown', (ev) => {
     if (!game) return;
     ensureAudio();
+    hideShopInfo();
     ev.preventDefault();
     const { x, y } = canvasCoords(ev);
     game.onTap(x, y);
