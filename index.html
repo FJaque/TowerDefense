@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#a9d18c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>🌻 Huerto vs Zombis — Tower Defense</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Menú principal ===== -->
+  <section id="screen-menu" class="screen active">
+    <div class="menu-card">
+      <div class="menu-deco" aria-hidden="true">🌻 🌿 🌺 🍄 🌵</div>
+      <h1>Huerto vs Zombis</h1>
+      <p class="tagline">Defiende tu casa de la horda… ¡con el poder de las plantas!</p>
+      <button id="btn-play" class="btn big">🌱 Jugar</button>
+      <button id="btn-help" class="btn">📖 Cómo jugar</button>
+      <div class="menu-row">
+        <button class="btn-mute btn icon" aria-label="Silenciar">🔊</button>
+        <button id="btn-reset" class="btn icon" title="Borrar progreso" aria-label="Borrar progreso">🗑️</button>
+      </div>
+      <div class="menu-deco" aria-hidden="true">🧟 🧟 🧟</div>
+    </div>
+  </section>
+
+  <!-- ===== Selección de nivel ===== -->
+  <section id="screen-levels" class="screen">
+    <header class="bar">
+      <button id="btn-levels-back" class="btn small">← Menú</button>
+      <h2>Elige tu nivel</h2>
+      <button class="btn-mute btn small icon" aria-label="Silenciar">🔊</button>
+    </header>
+    <div id="level-map">
+      <svg id="level-path" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div id="level-nodes"></div>
+      <div class="map-deco" style="left:44%; top:70%" aria-hidden="true">🌳</div>
+      <div class="map-deco" style="left:70%; top:22%" aria-hidden="true">🌳</div>
+      <div class="map-deco" style="left:6%; top:16%" aria-hidden="true">⛰️</div>
+      <div class="map-deco" style="left:90%; top:88%" aria-hidden="true">🏠</div>
+      <div class="map-deco small" style="left:38%; top:52%" aria-hidden="true">🌼</div>
+      <div class="map-deco small" style="left:58%; top:80%" aria-hidden="true">🌷</div>
+      <div class="map-deco small" style="left:22%; top:88%" aria-hidden="true">🍄</div>
+    </div>
+  </section>
+
+  <!-- ===== Juego ===== -->
+  <section id="screen-game" class="screen">
+    <header class="bar hud">
+      <div class="hud-group">
+        <span id="hud-level-name" class="hud-item name"></span>
+        <span id="hud-lives" class="hud-item">🏠 10</span>
+        <span id="hud-money" class="hud-item">💰 0</span>
+        <span id="hud-wave" class="hud-item">🧟 1/5</span>
+      </div>
+      <div class="hud-group">
+        <button id="btn-next-wave" class="btn small accent">⏩ ¡Que vengan!</button>
+        <button id="btn-speed" class="btn small">▶ x1</button>
+        <button id="btn-pause" class="btn small icon" aria-label="Pausa">⏸</button>
+        <button class="btn-mute btn small icon" aria-label="Silenciar">🔊</button>
+      </div>
+    </header>
+
+    <div id="canvas-wrap">
+      <canvas id="game-canvas"></canvas>
+      <div id="tower-panel"></div>
+    </div>
+
+    <div id="shop-info"></div>
+    <footer id="shop"></footer>
+  </section>
+
+  <!-- ===== Overlays ===== -->
+  <div id="overlay-help" class="overlay">
+    <div class="dialog">
+      <h2>📖 Cómo jugar</h2>
+      <ul class="help-list">
+        <li>🧟 Los zombis avanzan por el camino hacia tu <b>casa</b>. Si llegan, pierdes vidas.</li>
+        <li>🌱 Compra plantas en la tienda inferior y colócalas en el césped. Al elegir una verás su <b>alcance</b> antes de plantarla.</li>
+        <li>💰 Gana soles eliminando zombis y con los <b>Girasoles</b>.</li>
+        <li>⬆ Toca una planta colocada para <b>mejorarla</b> (hasta nivel 3) o <b>venderla</b>.</li>
+        <li>🌿 Cada planta es distinta: guisantes rápidos, hielo que ralentiza, fuego en área, veneno, francotirador…</li>
+        <li>⏩ Usa <b>x1/x2/x3</b> para acelerar y llama a la siguiente oleada antes de tiempo para ganar un bonus.</li>
+        <li>⭐ Termina con muchas vidas para conseguir 3 estrellas y desbloquear nuevos niveles.</li>
+      </ul>
+      <button id="help-close" class="btn big">¡Entendido!</button>
+    </div>
+  </div>
+
+  <div id="overlay-pause" class="overlay">
+    <div class="dialog">
+      <h2>⏸ Pausa</h2>
+      <button id="btn-resume" class="btn big">▶ Reanudar</button>
+      <button id="btn-restart" class="btn">🔄 Reiniciar nivel</button>
+      <button id="btn-quit" class="btn">🗺️ Volver al mapa</button>
+    </div>
+  </div>
+
+  <div id="overlay-end" class="overlay">
+    <div class="dialog">
+      <h2 id="end-title">¡Nivel superado!</h2>
+      <div id="end-stars" class="stars-big"></div>
+      <p id="end-sub"></p>
+      <button id="btn-end-next" class="btn big">➡ Siguiente nivel</button>
+      <button id="btn-end-retry" class="btn">🔄 Repetir</button>
+      <button id="btn-end-map" class="btn">🗺️ Mapa de niveles</button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
