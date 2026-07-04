@@ -25,6 +25,15 @@
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
     $(id).classList.add('active');
   }
+  function closeOverlays() {
+    document.querySelectorAll('.overlay').forEach((o) => o.classList.remove('visible'));
+  }
+  function goToMap() {
+    if (game) game.destroy();
+    closeOverlays();
+    buildLevelMap();
+    show('#screen-levels');
+  }
 
   /* ---------- audio ---------- */
   function ensureAudio() {
@@ -327,9 +336,7 @@
   });
   $('#btn-quit').addEventListener('click', () => {
     TD.audio.click();
-    game.destroy();
-    buildLevelMap();
-    show('#screen-levels');
+    goToMap();
   });
   $('#btn-end-retry').addEventListener('click', () => {
     TD.audio.click();
@@ -341,9 +348,7 @@
   });
   $('#btn-end-map').addEventListener('click', () => {
     TD.audio.click();
-    game.destroy();
-    buildLevelMap();
-    show('#screen-levels');
+    goToMap();
   });
 
   /* entrada en el canvas: convierte coordenadas de pantalla a lógicas */
